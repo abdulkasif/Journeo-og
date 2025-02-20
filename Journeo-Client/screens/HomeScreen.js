@@ -78,7 +78,7 @@ export default function HomeScreen() {
 
       // Send request to backend to fetch amenities
       let response = await fetch(
-        `https://gz64vwtx-6002.inc1.devtunnels.ms/api/amenities?lat=${userCoords.lat}&lon=${userCoords.lon}`
+        `https://rjvn06q4-6002.inc1.devtunnels.ms/api/generate-trip`
       );
 
       if (!response.ok) {
