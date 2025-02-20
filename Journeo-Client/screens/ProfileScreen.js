@@ -10,10 +10,10 @@ import {
   ActivityIndicator,
   TextInput,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import * as Location from "expo-location";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useNavigation } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons"; // Importing Ionicons for icons
+import * as Location from "expo-location"; // Importing Expo Location for geolocation services
+import AsyncStorage from "@react-native-async-storage/async-storage"; // Importing AsyncStorage for storing user data
+import { useNavigation } from "@react-navigation/native"; // Importing navigation hook
 
 export default function ProfileScreen() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -27,11 +27,13 @@ export default function ProfileScreen() {
     loadAddress();
   }, []);
 
+  // Load stored address from AsyncStorage
   const loadAddress = async () => {
     const storedAddress = await AsyncStorage.getItem("userAddress");
     if (storedAddress) setAddress(storedAddress);
   };
 
+  // Function to get user location
   const getLocation = async () => {
     setLoading(true);
     let { status } = await Location.requestForegroundPermissionsAsync();
@@ -52,6 +54,7 @@ export default function ProfileScreen() {
     setModalVisible(false);
   };
 
+  // Handle user logout and clear stored data
   const handleLogout = async () => {
     await AsyncStorage.removeItem("userData");
     navigation.replace("Login");
@@ -67,20 +70,25 @@ export default function ProfileScreen() {
       {/* Profile Details */}
       <View style={styles.profileContainer}>
         <View style={styles.row}>
-          <Ionicons name="person" size={24} color="#1c3cb5" />
+          {/* User profile icon with updated color */}
+          <Ionicons name="person" size={24} color="#09c2f0" />
           <Text style={styles.infoText}>{name}</Text>
         </View>
 
         <View style={styles.row}>
-          <Ionicons name="call" size={24} color="#1c3cb5" />
+          {/* Phone icon with updated color */}
+          <Ionicons name="call" size={24} color="#09c2f0" />
           <Text style={styles.infoText}>{phoneNumber}</Text>
         </View>
 
         <View style={styles.row}>
-          <Ionicons name="location" size={24} color="#1c3cb5" />
+          {/* Location icon with updated color */}
+          <Ionicons name="location" size={24} color="#09c2f0" />
           <Text style={styles.infoText}>{address}</Text>
+
+          {/* Edit icon for updating the address with updated color */}
           <TouchableOpacity onPress={() => setModalVisible(true)}>
-            <Ionicons name="pencil" size={20} color="#1c3cb5" style={styles.editIcon} />
+            <Ionicons name="pencil" size={20} color="#09c2f0" style={styles.editIcon} />
           </TouchableOpacity>
         </View>
       </View>
@@ -96,7 +104,7 @@ export default function ProfileScreen() {
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Edit Address</Text>
             {loading ? (
-              <ActivityIndicator size="large" color="#1c3cb5" />
+              <ActivityIndicator size="large" color="#09c2f0" />
             ) : (
               <TextInput
                 style={styles.input}
@@ -118,6 +126,7 @@ export default function ProfileScreen() {
   );
 }
 
+// Styles for the Profile Screen
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -133,7 +142,7 @@ const styles = StyleSheet.create({
   topBarTitle: {
     fontSize: 22,
     fontWeight: "bold",
-    color: "#1c3cb5",
+    color: "#09c2f0",
   },
   profileContainer: {
     backgroundColor: "white",
@@ -157,13 +166,13 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   logoutButton: {
-    backgroundColor: "#1c3cb5",
+    backgroundColor: "#09c2f0",
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: "center",
     width: "90%",
     alignSelf: "center",
-    marginTop: 430
+    marginTop: 430,
   },
   logoutText: {
     color: "white",
@@ -186,7 +195,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#1c3cb5",
+    color: "#09c2f0",
     marginBottom: 20,
   },
   input: {
@@ -200,7 +209,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   detectButton: {
-    backgroundColor: "#1c3cb5",
+    backgroundColor: "#09c2f0",
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: "center",
@@ -223,3 +232,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+

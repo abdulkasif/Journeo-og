@@ -78,7 +78,7 @@ export default function HomeScreen() {
 
       // Send request to backend to fetch amenities
       let response = await fetch(
-        `https://rjvn06q4-6002.inc1.devtunnels.ms/api/amenities?lat=${userCoords.lat}&lon=${userCoords.lon}`
+        `https://gz64vwtx-6002.inc1.devtunnels.ms/api/amenities?lat=${userCoords.lat}&lon=${userCoords.lon}`
       );
 
       if (!response.ok) {
@@ -221,13 +221,13 @@ export default function HomeScreen() {
             <Text style={styles.modalTitle}>Your Location</Text>
 
             {loading ? (
-              <ActivityIndicator size="large" color="#1c3cb5" />
+              <ActivityIndicator size="large" color="#09c2f05" />
             ) : (
               <View style={styles.inputContainer}>
                 <Ionicons
                   name="map"
                   size={20}
-                  color="#1c3cb5"
+                  color="#09c2f0"
                   style={styles.icon}
                 />
                 <TextInput
@@ -267,7 +267,7 @@ export default function HomeScreen() {
           <Ionicons
             name="home-outline"
             size={24}
-            color={activeTab === "Home" ? "#1c3cb5" : "gray"}
+            color={activeTab === "Home" ? "#09c2f0" : "gray"}
           />
           <Text
             style={[styles.menuText, activeTab === "Home" && styles.activeText]}
@@ -283,7 +283,7 @@ export default function HomeScreen() {
           <Ionicons
             name="briefcase-outline"
             size={24}
-            color={activeTab === "Trips" ? "#1c3cb5" : "gray"}
+            color={activeTab === "Trips" ? "#09c2f0" : "gray"}
           />
           <Text
             style={[
@@ -305,7 +305,7 @@ export default function HomeScreen() {
           <Ionicons
             name="person-outline"
             size={24}
-            color={activeTab === "Profile" ? "#1c3cb5" : "gray"}
+            color={activeTab === "Profile" ? "#09c2f0" : "gray"}
           />
           <Text
             style={[

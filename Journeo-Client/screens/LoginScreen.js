@@ -7,57 +7,48 @@ import {
   ImageBackground,
   StyleSheet,
   TouchableOpacity,
-  Alert, // Import for showing alert messages
+  Alert,
 } from "react-native";
-
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function LoginPage() {
-  const [passwordVisible, setPasswordVisible] = useState(false);
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [password, setPassword] = useState(""); // Add state for password
-  const navigation = useNavigation();
+  const [passwordVisible, setPasswordVisible] = useState(false); // State to toggle password visibility
+  const [phoneNumber, setPhoneNumber] = useState(""); // State for phone number input
+  const [password, setPassword] = useState(""); // State for password input
+  const navigation = useNavigation(); // Navigation hook
 
-  // Handle phone number input to limit to 10 digits
+  // Function to handle phone number input and limit to 10 digits
   const handlePhoneNumberChange = (text) => {
-    // Replace any non-numeric characters and limit to 10 digits
     const numericText = text.replace(/[^0-9]/g, "").slice(0, 10);
     setPhoneNumber(numericText);
   };
-  // Handle login button press
+
+  // Function to handle login logic
   const handleLogin = async () => {
     if (!phoneNumber || !password) {
       Alert.alert("Error", "Please enter both phone number and password.");
       return;
     }
-
     try {
       const response = await fetch(
-        "https://rjvn06q4-6001.inc1.devtunnels.ms/users/login",
+        "https://gz64vwtx-6001.inc1.devtunnels.ms/users/login",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            phonenumber: phoneNumber,
-            password: password,
-          }),
+          body: JSON.stringify({ phonenumber: phoneNumber, password: password }),
         }
       );
 
       const data = await response.json();
-
       if (response.ok) {
-        await AsyncStorage.setItem("userData", JSON.stringify(data.user));
-        // Handle successful login
+        await AsyncStorage.setItem("userData", JSON.stringify(data.user)); // Store user data in AsyncStorage
         Alert.alert("Success", "Login successful!");
-    
-        navigation.navigate("Home"); // Navigate to the home screen
+        navigation.navigate("Home"); // Navigate to Home screen after login
       } else {
-        // Handle errors returned by the backend
         Alert.alert("Login Failed", data.message || "Invalid credentials.");
       }
     } catch (error) {
@@ -68,24 +59,20 @@ export default function LoginPage() {
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground
-        source={require("../assets/images/Background.png")}
+        source={require("../assets/images/loginbackground.png")} // Background image for login screen
         style={styles.backgroundImage}
         resizeMode="cover"
       >
         <View style={styles.whiteBox}>
           <Text style={styles.title}>Welcome to Journeo</Text>
 
+          {/* Input field for phone number */}
           <View style={styles.inputContainer}>
-            <Ionicons
-              name="call-outline"
-              size={20}
-              color="#1c3cb5"
-              style={styles.icon}
-            />
+            <Ionicons name="call-outline" size={20} color="#09c2f0" style={styles.icon} />
             <TextInput
               style={styles.input}
               placeholder="Phone Number"
-              placeholderTextColor="black"
+              placeholderTextColor="#666"
               keyboardType="numeric"
               maxLength={10}
               value={phoneNumber}
@@ -93,43 +80,34 @@ export default function LoginPage() {
             />
           </View>
 
+          {/* Input field for password with toggle visibility */}
           <View style={styles.inputContainer}>
-            <Ionicons
-              name="lock-closed-outline"
-              size={20}
-              color="#1c3cb5"
-              style={styles.icon}
-            />
+            <Ionicons name="lock-closed-outline" size={20} color="#09c2f0" style={styles.icon} />
             <TextInput
               style={styles.input}
               placeholder="Password"
-              placeholderTextColor="black"
+              placeholderTextColor="#666"
               secureTextEntry={!passwordVisible}
               value={password}
               onChangeText={setPassword}
             />
-            <TouchableOpacity
-              onPress={() => setPasswordVisible(!passwordVisible)}
-              style={styles.iconRight}
-            >
-              <Ionicons
-                name={passwordVisible ? "eye-off-outline" : "eye-outline"}
-                size={20}
-                color="#1c3cb5"
-              />
+            <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)}>
+              <Ionicons name={passwordVisible ? "eye-off-outline" : "eye-outline"} size={20} color="#09c2f0" />
             </TouchableOpacity>
           </View>
 
+          {/* Login Button */}
           <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
             <Text style={styles.loginText}>Login</Text>
           </TouchableOpacity>
 
+          {/* Navigation to Sign Up */}
           <Text style={styles.footerText}>
-            Don't have an account?{" "}
+            Don't have an account? 
             <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
-              <Text style={[styles.footerText, { fontWeight: "bold" }]}>
-                Sign Up
-              </Text>
+            <Text style={[styles.signupText, { color: "#1572A1", fontWeight: "500" }]}> Sign Up</Text>
+
+
             </TouchableOpacity>
           </Text>
         </View>
@@ -137,6 +115,7 @@ export default function LoginPage() {
     </SafeAreaView>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -149,7 +128,7 @@ const styles = StyleSheet.create({
   whiteBox: {
     backgroundColor: "white",
     borderRadius: 16,
-    padding: 20,
+    padding: 25,
     width: "90%",
     shadowColor: "#000",
     shadowOpacity: 0.2,
@@ -159,27 +138,24 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: "bold",
+    color: "#09c2f0",
     marginBottom: 20,
-    color: "#1c3cb5",
   },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
+    borderColor: "#09c2f0",
+    borderRadius: 10,
+    backgroundColor: "#f1f8ff",
+    paddingHorizontal: 12,
     marginBottom: 15,
-    backgroundColor: "#f9f9f9",
     width: "100%",
-    paddingHorizontal: 10,
   },
   icon: {
-    marginRight: 5,
-  },
-  iconRight: {
-    marginLeft: "auto",
+    marginRight: 8,
   },
   input: {
     flex: 1,
@@ -188,10 +164,9 @@ const styles = StyleSheet.create({
     color: "black",
   },
   loginButton: {
-    backgroundColor: "#1c3cb5",
-    paddingVertical: 12,
-    paddingHorizontal: 25,
-    borderRadius: 8,
+    backgroundColor: "#09c2f0", // Primary button color
+    paddingVertical: 14,
+    borderRadius: 10,
     width: "100%",
     alignItems: "center",
     marginTop: 10,
@@ -199,11 +174,15 @@ const styles = StyleSheet.create({
   loginText: {
     color: "white",
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: "bold",
   },
   footerText: {
     marginTop: 15,
-    color: "#1c3cb5",
     fontSize: 14,
+    color: "#09c2f0",
+  },
+  signupText: {
+    fontWeight: "bold",
+    color: "#1572A1", // Updated to medium-dark blue for Sign Up text
   },
 });

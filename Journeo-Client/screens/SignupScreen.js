@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons"; // Import icons from Expo's icon library
+import { Ionicons } from "@expo/vector-icons"; // Import icons
 import { useNavigation } from "@react-navigation/native"; // Import navigation hook
 
 export default function SignupScreen() {
@@ -20,14 +20,13 @@ export default function SignupScreen() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const navigation = useNavigation(); 
+  const navigation = useNavigation();
 
-   const handlePhoneNumberChange = (text) => {
-    // Replace any non-numeric characters and limit to 10 digits
+  const handlePhoneNumberChange = (text) => {
     const numericText = text.replace(/[^0-9]/g, "").slice(0, 10);
     setPhoneNumber(numericText);
   };
-  // Validate confirm password
+
   const handleSignup = async () => {
     if (password !== confirmPassword) {
       Alert.alert("Error", "Passwords do not match.");
@@ -37,130 +36,101 @@ export default function SignupScreen() {
       Alert.alert("Error", "Please fill out all fields.");
       return;
     }
-  
+    
     try {
-      const response = await fetch("https://rjvn06q4-6001.inc1.devtunnels.ms/users/create", {
+      const response = await fetch("https://gz64vwtx-6001.inc1.devtunnels.ms/users/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           username,
-         phonenumber: phoneNumber,
+          phonenumber: phoneNumber,
           password,
         }),
       });
-  
+
       if (response.ok) {
-        const data = await response.json();
         Alert.alert("Success", "Account created successfully!");
-        console.log(data)
-        navigation.navigate("Login"); 
+        navigation.navigate("Login");
       } else {
         const error = await response.json();
-        console.log(error)
         Alert.alert("Error", error.message || "Something went wrong.");
       }
     } catch (err) {
       Alert.alert("Error", "Failed to connect to the server. Please try again.");
     }
   };
-  
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Background Image */}
       <ImageBackground
-        source={require("../assets/images/Background.png")}
+        source={require("../assets/images/loginbackground.png")}
         style={styles.backgroundImage}
         resizeMode="cover"
       >
-        {/* White Box Container */}
         <View style={styles.whiteBox}>
           <Text style={styles.title}>Create an Account</Text>
-
-          {/* Username Input */}
           <View style={styles.inputContainer}>
-            <Ionicons name="person-outline" size={20} color="#1c3cb5" style={styles.icon} />
+            <Ionicons name="person-outline" size={20} color="#09c2f0" style={styles.icon} />
             <TextInput
               style={styles.input}
               placeholder="Username"
-              placeholderTextColor="black"
+              placeholderTextColor="#666"
               value={username}
               onChangeText={setUsername}
             />
           </View>
-
-          {/* Phone Number Input */}
           <View style={styles.inputContainer}>
-            <Ionicons name="call-outline" size={20} color="#1c3cb5" style={styles.icon} />
+            <Ionicons name="call-outline" size={20} color="#09c2f0" style={styles.icon} />
             <TextInput
               style={styles.input}
               placeholder="Phone Number"
-              placeholderTextColor="black"
+              placeholderTextColor="#666"
               keyboardType="numeric"
               maxLength={10}
               value={phoneNumber}
               onChangeText={handlePhoneNumberChange}
             />
           </View>
-
-          {/* Password Input with Toggle */}
           <View style={styles.inputContainer}>
-            <Ionicons name="lock-closed-outline" size={20} color="#1c3cb5" style={styles.icon} />
+            <Ionicons name="lock-closed-outline" size={20} color="#09c2f0" style={styles.icon} />
             <TextInput
               style={styles.input}
               placeholder="Password"
-              placeholderTextColor="black"
+              placeholderTextColor="#666"
               secureTextEntry={!passwordVisible}
               value={password}
               onChangeText={setPassword}
             />
-            <TouchableOpacity
-              onPress={() => setPasswordVisible(!passwordVisible)}
-              style={styles.iconRight}
-            >
-              <Ionicons
-                name={passwordVisible ? "eye-off-outline" : "eye-outline"}
-                size={20}
-                color="#1c3cb5"
-              />
+            <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)} style={styles.iconRight}>
+              <Ionicons name={passwordVisible ? "eye-off-outline" : "eye-outline"} size={20} color="#09c2f0" />
             </TouchableOpacity>
           </View>
-
-          {/* Confirm Password Input with Toggle */}
           <View style={styles.inputContainer}>
-            <Ionicons name="lock-closed-outline" size={20} color="#1c3cb5" style={styles.icon} />
+            <Ionicons name="lock-closed-outline" size={20} color="#09c2f0" style={styles.icon} />
             <TextInput
               style={styles.input}
               placeholder="Confirm Password"
-              placeholderTextColor="black"
+              placeholderTextColor="#666"
               secureTextEntry={!confirmPasswordVisible}
               value={confirmPassword}
               onChangeText={setConfirmPassword}
             />
-            <TouchableOpacity
-              onPress={() => setConfirmPasswordVisible(!confirmPasswordVisible)}
-              style={styles.iconRight}
-            >
-              <Ionicons
-                name={confirmPasswordVisible ? "eye-off-outline" : "eye-outline"}
-                size={20}
-                color="#1c3cb5"
-              />
+            <TouchableOpacity onPress={() => setConfirmPasswordVisible(!confirmPasswordVisible)} style={styles.iconRight}>
+              <Ionicons name={confirmPasswordVisible ? "eye-off-outline" : "eye-outline"} size={20} color="#09c2f0" />
             </TouchableOpacity>
           </View>
-
-          {/* Signup Button */}
           <TouchableOpacity style={styles.signupButton} onPress={handleSignup}>
             <Text style={styles.signupText}>Sign Up</Text>
           </TouchableOpacity>
+          <View style={styles.footerContainer}>
+          <Text style={styles.footerText}>
+               Already have an account? <TouchableOpacity onPress={() => navigation.navigate("Login")}><Text style={[styles.loginText, { color: "#1572A1" }]}>Log In</Text>
+               </TouchableOpacity>
+          </Text>
+        </View>
 
-          <TouchableOpacity
-            onPress={() => navigation.navigate("Login")} // Navigate to Login
-          >
-            <Text style={styles.footerText}>Already have an account? Log In</Text>
-          </TouchableOpacity>
         </View>
       </ImageBackground>
     </SafeAreaView>
@@ -179,7 +149,7 @@ const styles = StyleSheet.create({
   whiteBox: {
     backgroundColor: "white",
     borderRadius: 16,
-    padding: 20,
+    padding: 25,
     width: "90%",
     shadowColor: "#000",
     shadowOpacity: 0.2,
@@ -189,39 +159,29 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: "bold",
+    color: "#09c2f0",
     marginBottom: 20,
-    color: "#1c3cb5",
   },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
+    borderColor: "#09c2f0",
+    borderRadius: 10,
+    backgroundColor: "#f1f8ff",
+    paddingHorizontal: 12,
     marginBottom: 15,
-    backgroundColor: "#f9f9f9",
     width: "100%",
-    paddingHorizontal: 10,
-  },
-  icon: {
-    marginRight: 5,
   },
   iconRight: {
     marginLeft: "auto",
   },
-  input: {
-    flex: 1,
-    paddingVertical: 12,
-    fontSize: 16,
-    color: "black",
-  },
   signupButton: {
-    backgroundColor: "#1c3cb5",
-    paddingVertical: 12,
-    paddingHorizontal: 25,
-    borderRadius: 8,
+    backgroundColor: "#09c2f0",
+    paddingVertical: 14,
+    borderRadius: 10,
     width: "100%",
     alignItems: "center",
     marginTop: 10,
@@ -229,11 +189,11 @@ const styles = StyleSheet.create({
   signupText: {
     color: "white",
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: "bold",
   },
   footerText: {
     marginTop: 15,
-    color: "#1c3cb5",
     fontSize: 14,
+    color: "#09c2f0",
   },
 });
