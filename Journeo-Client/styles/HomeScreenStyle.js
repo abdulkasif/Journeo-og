@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
       alignItems: "center",
       padding: 15,
     },
-    appName: { fontSize: 20, fontWeight: "bold", color: "#1c3cb5" },
+    appName: { fontSize: 20, fontWeight: "bold", color: "#09c2f0" },
   
     card: {
       backgroundColor: "white",
@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
     welcomeTitle: {
       fontSize: 22,
       fontWeight: "bold",
-      color: "#1c3cb5",
+      color: "#09c2f0",
       textAlign: "center",
     },
     welcomeDescription: {
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     formTitle: {
       fontSize: 18,
       fontWeight: "bold",
-      color: "#1c3cb5",
+      color: "#09c2f0",
       marginBottom: 10,
     },
     dropdownContainer: { marginBottom: 15 },
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     picker: { height: 50, backgroundColor: "#f9f9f9", borderRadius: 8 },
   
     generateButton: {
-      backgroundColor: "#1c3cb5",
+      backgroundColor: "#09c2f0",
       padding: 12,
       borderRadius: 8,
       alignItems: "center",
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     modalTitle: {
       fontSize: 20,
       fontWeight: "bold",
-      color: "#1c3cb5",
+      color: "#09c2f0",
       marginBottom: 20,
     },
     inputContainer: {
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     },
     detectButton: {
       flex: 1,
-      backgroundColor: "#1c3cb5",
+      backgroundColor: "#09c2f0",
       paddingVertical: 12,
       borderRadius: 8,
       alignItems: "center",
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     },
     menuItem: { alignItems: "center" },
     menuText: { fontSize: 12, color: "gray" },
-    activeText: { color: "#1c3cb5", fontWeight: "bold" },
+    activeText: { color: "#09c2f0", fontWeight: "bold" },
   });
 
 export default styles;
