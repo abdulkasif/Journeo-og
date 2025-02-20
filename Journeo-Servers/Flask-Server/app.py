@@ -35,7 +35,10 @@ def generate_trip():
     - Each stop **must be within {distance_range} m** of the start location.
     - Each stop must include **coordinates (latitude & longitude)** and a **full address**.
     - The trip must be **optimized within {available_time} minutes**.
-     
+      # - The **correct start location is**: "Villapuram, Madurai, Tamil Nadu (Pincode: 625012)"  
+     # - The exact **latitude and longitude** of Villapuram (Madurai) is:
+     #   - **Latitude**: 9.8829  
+     #   - **Longitude**: 78.0782 
     
     
 
