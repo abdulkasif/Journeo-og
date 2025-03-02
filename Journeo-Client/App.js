@@ -9,6 +9,7 @@ import HomeScreen from './screens/HomeScreen';
 import SplashService from './services/SplashService';
 import ProfileScreen from './screens/ProfileScreen';
 import TripMapScreen from './screens/TripMapScreen';
+import PlaceDetails from './screens/PlaceDetail';
 
 
 const Stack = createStackNavigator();
@@ -25,6 +26,7 @@ export default function App() {
         <Stack.Screen name='Home' component={HomeScreen} />
         <Stack.Screen name='Profile' component={ProfileScreen}/>
         <Stack.Screen name='TripMap' component={TripMapScreen}/>
+        <Stack.Screen name="PlaceDetails" component={PlaceDetails} />
       
       </Stack.Navigator>
     </NavigationContainer>

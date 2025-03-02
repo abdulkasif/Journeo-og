@@ -10,12 +10,14 @@ import {
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 
 const TripMapScreen = ({ route }) => {
   const { tripData } = route.params;
   const { user_latitude, user_longitude, stops, total_duration } = tripData;
   const mapRef = useRef(null);
   const [selectedPlace, setSelectedPlace] = useState(null);
+  const navigation = useNavigation();
 
   // Ensure user location is correctly formatted
   const validUserLocation = {
@@ -36,6 +38,10 @@ const TripMapScreen = ({ route }) => {
       address: stop.address,
       latitude: parseFloat(stop.latitude),
       longitude: parseFloat(stop.longitude),
+      description: stop.description,
+      activities: stop.activities,
+      interest: stop.interest,
+      visit_duration: stop.visit_duration,
     }))
     .filter((stop) => !isNaN(stop.latitude) && !isNaN(stop.longitude));
 
@@ -59,6 +65,7 @@ const TripMapScreen = ({ route }) => {
       latitudeDelta: 0.05,
       longitudeDelta: 0.05,
     });
+    navigation.navigate("PlaceDetails", { place });
   };
 
   const handleStartTrip = () => {
