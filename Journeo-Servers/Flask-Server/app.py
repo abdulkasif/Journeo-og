@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import pandas as pd
 import os
+import random
 from math import radians, sin, cos, sqrt, atan2
 
 app = Flask(__name__)
@@ -10,7 +11,6 @@ CORS(app)
 # Load Excel file
 EXCEL_PATH = os.path.join(os.getcwd(), "data", "PlacesInMadurai.xlsx")
 places_df = pd.read_excel(EXCEL_PATH)
-
 
 # Function to calculate distance using the Haversine formula
 def calculate_distance(lat1, lon1, lat2, lon2):
@@ -23,11 +23,9 @@ def calculate_distance(lat1, lon1, lat2, lon2):
     c = 2 * atan2(sqrt(a), sqrt(1 - a))
     return R * c  # Distance in km
 
-
 @app.route("/api/generate-trip", methods=["POST"])
 def generate_trip():
     data = request.json
-    print(data)
     location = data.get("location")
     interests = data.get("interests", [])
     available_time = int(data.get("availableTime", 0))
@@ -37,7 +35,7 @@ def generate_trip():
     user_lon = float(data.get("longitude"))
 
     # Filter places based on interest and distance
-    interest_based_places = {interest: [] for interest in interests}
+    interest_based_places = []
 
     for _, row in places_df.iterrows():
         place_lat = float(row["Latitude"])
@@ -60,32 +58,17 @@ def generate_trip():
                 "visit_duration": visit_duration,
                 "interest": row["Type"]
             }
-            interest_based_places[row["Type"]].append(place_info)
+            interest_based_places.append(place_info)
 
-    # Sort each interest category by shortest distance
-    for interest in interest_based_places:
-        interest_based_places[interest].sort(key=lambda x: x["distance"])
+    # Shuffle places to ensure randomness
+    random.shuffle(interest_based_places)
 
-    # Select at least one place from each interest while keeping within available time
+    # Select as many places as possible within the available time
     selected_stops = []
     total_time = 0
 
-    # First, pick one place per interest category
-    for interest in interests:
-        if interest_based_places[interest]:
-            place = interest_based_places[interest][0]  # Closest place of this interest
-            if total_time + place["travel_time"] + place["visit_duration"] <= available_time:
-                selected_stops.append(place)
-                total_time += place["travel_time"] + place["visit_duration"]
-
-    # Then, add additional places from any category, prioritizing by shortest distance
-    remaining_places = sorted(
-        [place for places in interest_based_places.values() for place in places],
-        key=lambda x: x["distance"]
-    )
-
-    for place in remaining_places:
-        if place not in selected_stops and total_time + place["travel_time"] + place["visit_duration"] <= available_time:
+    for place in interest_based_places:
+        if total_time + place["travel_time"] + place["visit_duration"] <= available_time:
             selected_stops.append(place)
             total_time += place["travel_time"] + place["visit_duration"]
 
@@ -106,7 +89,6 @@ def generate_trip():
     }
 
     return jsonify(trip_plan)
-
 
 if __name__ == "__main__":
     app.run(debug=True, port=6002, host="0.0.0.0")
