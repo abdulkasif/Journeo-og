@@ -70,7 +70,8 @@ const TripMapScreen = ({ route }) => {
 
   const handleStartTrip = () => {
     // Implement the logic to start the trip
-    Alert.alert("Trip Started", "Your journey has begun!");
+    // Alert.alert("Trip Started", "Your journey has begun!");
+    navigation.navigate("TripRoute", { tripData });
   };
 
   return (

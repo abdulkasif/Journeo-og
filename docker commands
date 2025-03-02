@@ -1,0 +1,5 @@
+docker run -t -v "C:\osrm-backend:/data" osrm/osrm-backend osrm-extract -p /opt/car.lua /data/southern-zone-latest.osm.pbf
+
+docker run -t -v "C:\osrm-backend:/data" osrm/osrm-backend osrm-contract /data/southern-zone-latest.osrm
+
+docker run -t -i -p 5000:5000 -v "C:\osrm-backend:/data" osrm/osrm-backend osrm-routed /data/southern-zone-latest.osrm
