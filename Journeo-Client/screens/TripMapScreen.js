@@ -1,6 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, StyleSheet, Dimensions, Alert, Text, FlatList, TouchableOpacity, Image } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Dimensions,
+  Alert,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 import MapView, { Marker } from "react-native-maps";
+import { Ionicons } from "@expo/vector-icons";
 
 const TripMapScreen = ({ route }) => {
   const { tripData } = route.params;
@@ -28,16 +37,11 @@ const TripMapScreen = ({ route }) => {
       latitude: parseFloat(stop.latitude),
       longitude: parseFloat(stop.longitude),
     }))
-    .filter(
-      (stop) => !isNaN(stop.latitude) && !isNaN(stop.longitude)
-    );
+    .filter((stop) => !isNaN(stop.latitude) && !isNaN(stop.longitude));
 
   useEffect(() => {
     if (mapRef.current && validPlaces.length > 0) {
-      const coordinates = [
-        validUserLocation,
-        ...validPlaces,
-      ];
+      const coordinates = [validUserLocation, ...validPlaces];
 
       // Fit the map to the coordinates
       mapRef.current.fitToCoordinates(coordinates, {
@@ -57,8 +61,19 @@ const TripMapScreen = ({ route }) => {
     });
   };
 
+  const handleStartTrip = () => {
+    // Implement the logic to start the trip
+    Alert.alert("Trip Started", "Your journey has begun!");
+  };
+
   return (
     <View style={styles.container}>
+      <View style={styles.topBar}>
+        <Text style={styles.appName}>Journeo</Text>
+        <TouchableOpacity onPress={() => mapRef.current.animateToRegion(validUserLocation)}>
+          <Ionicons name="location-outline" size={24} color="black" />
+        </TouchableOpacity>
+      </View>
       <MapView
         ref={mapRef}
         style={styles.map}
@@ -91,27 +106,30 @@ const TripMapScreen = ({ route }) => {
         ))}
       </MapView>
 
-      {/* List of Places */}
-      <FlatList
-        style={styles.list}
-        data={validPlaces}
-        keyExtractor={(item, index) => `place-${index}`}
-        renderItem={({ item }) => (
+      {/* Scrollable List of Places */}
+      <ScrollView style={styles.list} contentContainerStyle={styles.listContainer}>
+        {validPlaces.map((item, index) => (
           <TouchableOpacity
-            style={[styles.listItem, selectedPlace?.name === item.name && styles.selectedListItem]}
+            key={`place-${index}`}
+            style={[
+              styles.listItem,
+              selectedPlace?.name === item.name && styles.selectedListItem,
+            ]}
             onPress={() => handlePlacePress(item)}
           >
-            <Text style={styles.listItemTitle}>{item.name}</Text>
-            <Text style={styles.listItemAddress}>{item.address}</Text>
-            {/* {selectedPlace?.name === item.name && (
-              <Image
-                source={require('./assets/selected.png')} // Add a checkmark or highlight icon
-                style={styles.selectedIcon}
-              />
-            )} */}
+            <View style={styles.listItemContent}>
+              <Text style={styles.listItemTitle}>{item.name}</Text>
+              <Text style={styles.listItemAddress}>{item.address}</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={24} color="#09c2f0" />
           </TouchableOpacity>
-        )}
-      />
+        ))}
+      </ScrollView>
+
+      {/* Start Trip Button */}
+      <TouchableOpacity style={styles.startTripButton} onPress={handleStartTrip}>
+        <Text style={styles.startTripText}>Start the Trip</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -119,41 +137,64 @@ const TripMapScreen = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "white",
   },
+  topBar: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 15,
+    backgroundColor: "white",
+  },
+  appName: { fontSize: 20, fontWeight: "bold", color: "#09c2f0" },
   map: {
     width: Dimensions.get("window").width,
     height: Dimensions.get("window").height / 2, // Half of the screen height
   },
   list: {
     flex: 1,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: "#f8f8f8",
+  },
+  listContainer: {
+    paddingVertical: 10,
   },
   listItem: {
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-    backgroundColor: '#fff',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    borderBottomColor: "#e0e0e0",
+    backgroundColor: "#fff",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
   },
   selectedListItem: {
-    backgroundColor: '#e0f7fa', // Light blue background for selected item
+    backgroundColor: "#e0f7fa", // Light blue background for selected item
+  },
+  listItemContent: {
+    flex: 1,
   },
   listItemTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
   },
   listItemAddress: {
     fontSize: 14,
-    color: '#777',
+    color: "#777",
     marginTop: 4,
   },
-  selectedIcon: {
-    width: 20,
-    height: 20,
-    tintColor: '#007BFF', // Blue color for the selected icon
+  startTripButton: {
+    backgroundColor: "#09c2f0",
+    padding: 15,
+    borderRadius: 8,
+    alignItems: "center",
+    margin: 20,
+  },
+  startTripText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 
