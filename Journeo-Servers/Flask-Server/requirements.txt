@@ -2,9 +2,3 @@ flask
 flask-cors
 requests
 python-dotenv
-<<<<<<< HEAD
-=======
-
-python-dotenv
-requests
->>>>>>> 98208a5f3f7e9bbc7eb344caff710d69a0a8cebc
