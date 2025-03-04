@@ -60,10 +60,13 @@ def generate_trip():
             }
             interest_based_places.append(place_info)
 
-    # Shuffle places to ensure randomness
-    random.shuffle(interest_based_places)
+    if not interest_based_places:
+        return jsonify({"error": "Not enough places found within the distance range"}), 400
 
-    # Select as many places as possible within the available time
+    # Step 1: Sort the places by distance from the user
+    interest_based_places.sort(key=lambda place: place["distance"])
+
+    # Step 2: Select stops within the available time limit
     selected_stops = []
     total_time = 0
 
@@ -73,7 +76,18 @@ def generate_trip():
             total_time += place["travel_time"] + place["visit_duration"]
 
     if not selected_stops:
-        return jsonify({"error": "Not enough places found within the distance range"}), 400
+        return jsonify({"error": "Not enough places fit within the available time"}), 400
+
+    # Step 3: Arrange stops in the optimal order by selecting the nearest place at each step
+    ordered_stops = []
+    current_location = (user_lat, user_lon)
+
+    while selected_stops:
+        # Find the closest stop
+        selected_stops.sort(key=lambda stop: calculate_distance(current_location[0], current_location[1], stop["latitude"], stop["longitude"]))
+        next_stop = selected_stops.pop(0)  # Pick the closest stop
+        ordered_stops.append(next_stop)
+        current_location = (next_stop["latitude"], next_stop["longitude"])  # Move to the new stop
 
     trip_plan = {
         "trip_plan": {
@@ -81,9 +95,9 @@ def generate_trip():
             "user_latitude": user_lat,
             "user_longitude": user_lon,
             "total_duration": f"{total_time} minutes",
-            "stops": selected_stops,
+            "stops": ordered_stops,
             "return": {
-                "travel_time": f"{sum(place['travel_time'] for place in selected_stops):.0f} min"
+                "travel_time": f"{sum(place['travel_time'] for place in ordered_stops):.0f} min"
             }
         }
     }

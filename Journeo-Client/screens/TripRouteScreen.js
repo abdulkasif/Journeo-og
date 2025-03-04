@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Dimensions } from "react-native";
+import { View, StyleSheet, Dimensions, Text, ScrollView } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
 
-const OSRM_SERVER_URL = "http://192.168.31.126:5000/route/v1/driving/";
+const OSRM_SERVER_URL = "http://192.168.85.157:5000/route/v1/driving/";
+const COLORS = ["#09c2f0", "#ff5733", "#28a745", "#f0ad4e", "#9b59b6"]; // Colors for each segment
 
 const TripRouteScreen = ({ route }) => {
   const { tripData } = route.params;
   const { user_latitude, user_longitude, stops } = tripData;
-  const [routeCoordinates, setRouteCoordinates] = useState([]);
+  const [routeSegments, setRouteSegments] = useState([]);
 
   const validUserLocation = {
     latitude: parseFloat(user_latitude),
@@ -17,28 +18,40 @@ const TripRouteScreen = ({ route }) => {
   const validPlaces = stops.map((stop) => ({
     latitude: parseFloat(stop.latitude),
     longitude: parseFloat(stop.longitude),
+    name: stop.name,
+    visit_duration: stop.visit_duration,
+    activities: stop.activities,
   }));
 
   useEffect(() => {
-    const fetchRoute = async () => {
-      const coordinates = [validUserLocation, ...validPlaces, validUserLocation]
-        .map(loc => `${loc.longitude},${loc.latitude}`)
-        .join(";");
+    const fetchRoutes = async () => {
+      let segments = [];
+      const waypoints = [validUserLocation, ...validPlaces, validUserLocation];
 
-      try {
-        const response = await fetch(`${OSRM_SERVER_URL}${coordinates}`);
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
+      for (let i = 0; i < waypoints.length - 1; i++) {
+        const start = waypoints[i];
+        const end = waypoints[i + 1];
+        const routeUrl = `${OSRM_SERVER_URL}${start.longitude},${start.latitude};${end.longitude},${end.latitude}`;
+
+        try {
+          const response = await fetch(routeUrl);
+          if (!response.ok) throw new Error("Route fetch failed");
+          const data = await response.json();
+          const decodedPolyline = decodePolyline(data.routes[0].geometry);
+
+          segments.push({
+            coordinates: decodedPolyline,
+            color: COLORS[i % COLORS.length], // Assign color dynamically
+          });
+        } catch (error) {
+          console.error(`Error fetching route segment ${i}:`, error);
         }
-        const data = await response.json();
-        const decodedPolyline = decodePolyline(data.routes[0].geometry);
-        setRouteCoordinates(decodedPolyline);
-      } catch (error) {
-        console.error("Error fetching route:", error);
       }
+
+      setRouteSegments(segments);
     };
 
-    fetchRoute();
+    fetchRoutes();
   }, [validUserLocation, validPlaces]);
 
   const decodePolyline = (encodedPolyline) => {
@@ -77,6 +90,7 @@ const TripRouteScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
+      {/* Map Section */}
       <MapView
         style={styles.map}
         initialRegion={{
@@ -85,17 +99,37 @@ const TripRouteScreen = ({ route }) => {
           longitudeDelta: 0.05,
         }}
       >
-        {/* User Location Marker */}
         <Marker coordinate={validUserLocation} title="Your Location" pinColor="blue" />
 
-        {/* Places Markers */}
         {validPlaces.map((place, index) => (
-          <Marker key={`marker-${index}`} coordinate={place} />
+          <Marker key={`marker-${index}`} coordinate={place} title={place.name} />
         ))}
 
-        {/* Route Polyline */}
-        <Polyline coordinates={routeCoordinates} strokeWidth={4} strokeColor="#09c2f0" />
+        {routeSegments.map((segment, index) => (
+          <Polyline
+            key={`polyline-${index}`}
+            coordinates={segment.coordinates}
+            strokeWidth={4}
+            strokeColor={segment.color}
+          />
+        ))}
       </MapView>
+
+      {/* Trip Details Section */}
+      <ScrollView style={styles.detailsContainer}>
+        <Text style={styles.header}>Trip Plan</Text>
+        {validPlaces.map((place, index) => (
+          <View key={`place-${index}`} style={styles.stopContainer}>
+            <Text style={styles.stopTitle}>
+              {index === 0 ? "1. Your location to " : `${index + 1}. Stop ${index} to `} 
+              {place.name}
+            </Text>
+            <Text style={styles.info}>📍 Place: {place.name}</Text>
+            <Text style={styles.info}>⏳ Visit Duration: {place.visit_duration} mins</Text>
+            <Text style={styles.info}>🎯 Activities: {place.activities.join(", ")}</Text>
+          </View>
+        ))}
+      </ScrollView>
     </View>
   );
 };
@@ -107,7 +141,36 @@ const styles = StyleSheet.create({
   },
   map: {
     width: Dimensions.get("window").width,
-    height: Dimensions.get("window").height,
+    height: Dimensions.get("window").height / 2, // Half screen map
+  },
+  detailsContainer: {
+    flex: 1,
+    padding: 15,
+    backgroundColor: "white",
+  },
+  header: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#09c2f0",
+    marginBottom: 10,
+  },
+  stopContainer: {
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 10,
+    backgroundColor: "#f5f5f5",
+    borderLeftWidth: 4,
+    borderLeftColor: "#09c2f0",
+  },
+  stopTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 5,
+  },
+  info: {
+    fontSize: 14,
+    color: "#555",
   },
 });
 
